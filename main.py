@@ -1,20 +1,11 @@
 from flask import Flask, request, send_file
+from flask_cors import CORS
 import cv2
 import numpy as np
 import os
 
 app = Flask(__name__)
-
-@app.route('/')
-def index():
-    return '''
-    <form method="post" action="/upload" enctype="multipart/form-data">
-        Height: <input type="text" name="height" placeholder="Height"><br>
-        Width: <input type="text" name="width" placeholder="Width"><br>
-        Image upload: <input type="file" name="image"><br>
-        <input type="submit">
-    </form>
-    '''
+CORS(app)
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -46,10 +37,7 @@ def upload():
         temp_file = 'temp_image.jpg'
         cv2.imwrite(temp_file, resized_image)
 
-        original_name = os.path.splitext(file.filename)[0]
-        new_filename = f"{original_name}_{height}_{width}.jpg"
-
-        return send_file(temp_file, download_name=new_filename, as_attachment=True)
+        return send_file(temp_file, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
